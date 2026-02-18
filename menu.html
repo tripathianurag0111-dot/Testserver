@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu - Royal Spice Restaurant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gold: #D4AF37;
+            --dark-bg: #0a0a0a;
+            --card-bg: #1a1a1a;
+            --text-light: #f5f5f5;
+            --text-gray: #b0b0b0;
+            --accent-red: #8B0000;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.98);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(212, 175, 55, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+            text-decoration: none;
+        }
+
+        .logo i {
+            margin-right: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-gold);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-gold);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--primary-gold);
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-top: 70px;
+            padding: 4rem 2rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.2) 0%, rgba(212, 175, 55, 0.2) 100%);
+        }
+
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: var(--primary-gold);
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+        }
+
+        /* Menu Container */
+        .menu-container {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Category Filter */
+        .category-filter {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.8rem 2rem;
+            background: var(--card-bg);
+            color: var(--text-light);
+            border: 2px solid transparent;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--primary-gold);
+            color: var(--dark-bg);
+            border-color: var(--primary-gold);
+            transform: translateY(-2px);
+        }
+
+        /* Menu Category */
+        .menu-category {
+            margin-bottom: 4rem;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--primary-gold);
+        }
+
+        .category-header i {
+            font-size: 2rem;
+            color: var(--primary-gold);
+        }
+
+        .category-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: var(--primary-gold);
+        }
+
+        /* Menu Items Grid */
+        .menu-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .menu-item {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
+        }
+
+        .item-image {
+            width: 150px;
+            min-height: 150px;
+            background: linear-gradient(135deg, #8B0000 0%, #D4AF37 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .item-details {
+            flex: 1;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .item-header {
+            margin-bottom: 0.5rem;
+        }
+
+        .item-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--primary-gold);
+            margin-bottom: 0.3rem;
+        }
+
+        .item-type {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .veg {
+            background: rgba(34, 139, 34, 0.2);
+            color: #32CD32;
+            border: 1px solid #32CD32;
+        }
+
+        .non-veg {
+            background: rgba(139, 0, 0, 0.2);
+            color: #FF6347;
+            border: 1px solid #FF6347;
+        }
+
+        .item-description {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-price {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-gold);
+        }
+
+        .spice-level {
+            display: flex;
+            gap: 0.2rem;
+        }
+
+        .spice-level i {
+            color: #FF4500;
+            font-size: 0.9rem;
+        }
+
+        /* Special Badge */
+        .special-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--primary-gold);
+            color: var(--dark-bg);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--card-bg);
+            padding: 2rem;
+            margin-top: 5rem;
+            text-align: center;
+        }
+
+        .footer p {
+            color: var(--text-gray);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: flex;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                right: -100%;
+                flex-direction: column;
+                background: rgba(10, 10, 10, 0.98);
+                width: 100%;
+                padding: 2rem;
+                gap: 1rem;
+                transition: right 0.3s;
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .menu-items {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-item {
+                flex-direction: column;
+            }
+
+            .item-image {
+                width: 100%;
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-utensils"></i>Royal Spice
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Our Menu</h1>
+        <p>Explore our exquisite selection of Indian & Mughlai delicacies</p>
+    </div>
+
+    <!-- Menu Container -->
+    <div class="menu-container">
+        <!-- Category Filter -->
+        <div class="category-filter">
+            <button class="filter-btn active" onclick="filterMenu('all')">All Dishes</button>
+            <button class="filter-btn" onclick="filterMenu('starters')">Starters</button>
+            <button class="filter-btn" onclick="filterMenu('main-course')">Main Course</button>
+            <button class="filter-btn" onclick="filterMenu('biryani')">Biryani</button>
+            <button class="filter-btn" onclick="filterMenu('drinks')">Drinks</button>
+            <button class="filter-btn" onclick="filterMenu('desserts')">Desserts</button>
+        </div>
+
+        <!-- Starters Category -->
+        <div class="menu-category" data-category="starters">
+            <div class="category-header">
+                <i class="fas fa-fire"></i>
+                <h2>Starters</h2>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item">
+                    <div class="item-image">🥟</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Chicken Tikka</h3>
+                            <span class="item-type non-veg">Non-Veg</span>
+                            <p class="item-description">Succulent chicken pieces marinated in yogurt and spices, grilled to perfection in tandoor</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹280</span>
+                            <div class="spice-level">
+                                <i class="fas fa-pepper-hot"></i>
+                                <i class="fas fa-pepper-hot"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background: linear-gradient(135deg, #228B22 0%, #D4AF37 100%);">🧆</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Paneer Tikka</h3>
+                            <span class="item-type veg">Veg</span>
+                            <p class="item-description">Cottage cheese cubes marinated in spiced yogurt and grilled with bell peppers and onions</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹250</span>
+                            <div class="spice-level">
+                                <i class="fas fa-pepper-hot"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image">🍤</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Tandoori Prawns</h3>
+                            <span class="item-type non-veg">Non-Veg</span>
+                            <p class="item-description">Jumbo prawns marinated with aromatic spices and cooked in clay oven</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹450</span>
+                            <div class="spice-level">
+                                <i class="fas fa-pepper-hot"></i>
+                                <i class="fas fa-pepper-hot"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background: linear-gradient(135deg, #D4AF37 0%, #FF8C00 100%);">🥙</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Seekh Kebab</h3>
+                            <span class="item-type non-veg">Non-Veg</span>
+                            <span class="special-badge">Chef's Special</span>
+                            <p class="item-description">Minced meat kebabs infused with herbs and spices, grilled on skewers</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹320</span>
+                            <div class="spice-level">
+                                <i class="fas fa-pepper-hot"></i>
+                                <i class="fas fa-pepper-hot"></i>
+                                <i class="fas fa-pepper-hot"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Course Category -->
+        <div class="menu-category" data-category="main-course">
+            <div class="category-header">
+                <i class="fas fa-drumstick-bite"></i>
+                <h2>Main Course</h2>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item">
+                    <div class="item-image">🍛</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Butter Chicken</h3>
+                            <span class="item-type non-veg">Non-Veg</span>
+                            <span class="special-badge">Bestseller</span>
+                            <p class="item-description">Tender chicken in rich creamy tomato gravy with aromatic spices and butter</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹350</span>
+                            <div class="spice-level">
+                                <i class="fas fa-pepper-hot"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background: linear-gradient(135deg, #8B0000 0%, #FF6347 100%);">🍗</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Rogan Josh</h3>
+                            <span class="item-type non-veg">Non-Veg</span>
+                            <p class="item-description">Aromatic lamb curry cooked with Kashmiri spices in traditional style</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹420</span>
+                            <div class="spice-level">
+                                <i class="fas fa-pepper-hot"></i>
+                                <i class="fas fa-pepper-hot"></i>
+                                <i class="fas fa-pepper-hot"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background: linear-gradient(135deg, #228B22 0%, #90EE90 100%);">🥘</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Paneer Tikka Masala</h3>
+                            <span class="item-type veg">Veg</span>
+                            <p class="item-description">Grilled cottage cheese cubes in spiced tomato-based curry with cream</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹280</span>
+                            <div class="spice-level">
+                                <i class="fas fa-pepper-hot"></i>
+                                <i class="fas fa-pepper-hot"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background: linear-gradient(135deg, #D4AF37 0%, #DAA520 100%);">🫘</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Dal Makhani</h3>
+                            <span class="item-type veg">Veg</span>
+                            <p class="item-description">Black lentils slow-cooked overnight with cream, butter and aromatic spices</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹220</span>
+                            <div class="spice-level">
+                                <i class="fas fa-pepper-hot"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image">🍖</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Nihari</h3>
+                            <span class="item-type non-veg">Non-Veg</span>
+                            <span class="special-badge">Royal Delicacy</span>
+                            <p class="item-description">Slow-cooked beef stew with bone marrow and aromatic spices</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹380</span>
+                            <div class="spice-level">
+                                <i class="fas fa-pepper-hot"></i>
+                                <i class="fas fa-pepper-hot"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background: linear-gradient(135deg, #32CD32 0%, #228B22 100%);">🥬</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Palak Paneer</h3>
+                            <span class="item-type veg">Veg</span>
+                            <p class="item-description">Fresh spinach curry with cottage cheese cubes and mild spices</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹260</span>
+                            <div class="spice-level">
+                                <i class="fas fa-pepper-hot"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Biryani Category -->
+        <div class="menu-category" data-category="biryani">
+            <div class="category-header">
+                <i class="fas fa-bowl-rice"></i>
+                <h2>Biryani Specials</h2>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item">
+                    <div class="item-image" style="background: linear-gradient(135deg, #D4AF37 0%, #FF8C00 100%);">🍚</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Hyderabadi Biryani</h3>
+                            <span class="item-type non-veg">Non-Veg</span>
+                            <span class="special-badge">Signature</span>
+                            <p class="item-description">Fragrant basmati rice layered with marinated meat, saffron and aromatic spices</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹400</span>
+                            <div class="spice-level">
+                                <i class="fas fa-pepper-hot"></i>
+                                <i class="fas fa-pepper-hot"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background: linear-gradient(135deg, #8B0000 0%, #D4AF37 100%);">🍗</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Chicken Dum Biryani</h3>
+                            <span class="item-type non-veg">Non-Veg</span>
+                            <p class="item-description">Chicken pieces cooked with rice in sealed pot for authentic flavors</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹380</span>
+                            <div class="spice-level">
+                                <i class="fas fa-pepper-hot"></i>
+                                <i class="fas fa-pepper-hot"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background: linear-gradient(135deg, #228B22 0%, #FFD700 100%);">🥔</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Veg Biryani</h3>
+                            <span class="item-type veg">Veg</span>
+                            <p class="item-description">Mixed vegetables and paneer cooked with aromatic basmati rice</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹300</span>
+                            <div class="spice-level">
+                                <i class="fas fa-pepper-hot"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background: linear-gradient(135deg, #FF6347 0%, #D4AF37 100%);">🍖</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Mutton Biryani</h3>
+                            <span class="item-type non-veg">Non-Veg</span>
+                            <span class="special-badge">Premium</span>
+                            <p class="item-description">Tender mutton pieces slow-cooked with premium basmati rice and spices</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹450</span>
+                            <div class="spice-level">
+                                <i class="fas fa-pepper-hot"></i>
+                                <i class="fas fa-pepper-hot"></i>
+                                <i class="fas fa-pepper-hot"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Drinks Category -->
+        <div class="menu-category" data-category="drinks">
+            <div class="category-header">
+                <i class="fas fa-glass-water"></i>
+                <h2>Refreshing Drinks</h2>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item">
+                    <div class="item-image" style="background: linear-gradient(135deg, #FFFACD 0%, #FFD700 100%);">🥭</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Mango Lassi</h3>
+                            <span class="item-type veg">Veg</span>
+                            <p class="item-description">Traditional yogurt-based drink blended with sweet mango pulp</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹120</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background: linear-gradient(135deg, #87CEEB 0%, #4682B4 100%);">🥛</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Sweet Lassi</h3>
+                            <span class="item-type veg">Veg</span>
+                            <p class="item-description">Creamy yogurt drink sweetened with sugar and flavored with cardamom</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹100</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background: linear-gradient(135deg, #FFA500 0%, #FF6347 100%);">🍹</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Fresh Lime Soda</h3>
+                            <span class="item-type veg">Veg</span>
+                            <p class="item-description">Freshly squeezed lime juice with sparkling soda and mint</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹80</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background: linear-gradient(135deg, #D2691E 0%, #8B4513 100%);">☕</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Masala Chai</h3>
+                            <span class="item-type veg">Veg</span>
+                            <p class="item-description">Aromatic Indian tea brewed with milk and special spices</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹60</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Desserts Category -->
+        <div class="menu-category" data-category="desserts">
+            <div class="category-header">
+                <i class="fas fa-ice-cream"></i>
+                <h2>Sweet Endings</h2>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item">
+                    <div class="item-image" style="background: linear-gradient(135deg, #FFE4B5 0%, #FFD700 100%);">🍮</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Gulab Jamun</h3>
+                            <span class="item-type veg">Veg</span>
+                            <p class="item-description">Soft milk dumplings soaked in rose-flavored sugar syrup</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹120</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background: linear-gradient(135deg, #F0E68C 0%, #D4AF37 100%);">🍰</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Ras Malai</h3>
+                            <span class="item-type veg">Veg</span>
+                            <span class="special-badge">House Special</span>
+                            <p class="item-description">Cottage cheese dumplings in sweet saffron-flavored milk</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹140</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background: linear-gradient(135deg, #DDA0DD 0%, #8B008B 100%);">🍨</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Kulfi</h3>
+                            <span class="item-type veg">Veg</span>
+                            <p class="item-description">Traditional Indian ice cream flavored with cardamom and pistachios</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹100</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background: linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%);">🥧</div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">Gajar Ka Halwa</h3>
+                            <span class="item-type veg">Veg</span>
+                            <p class="item-description">Grated carrots cooked in milk, sugar, and ghee with dry fruits</p>
+                        </div>
+                        <div class="item-footer">
+                            <span class="item-price">₹130</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Royal Spice Restaurant. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Close menu when clicking on a link
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Category filter functionality
+        function filterMenu(category) {
+            const categories = document.querySelectorAll('.menu-category');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            
+            // Update active button
+            filterBtns.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Show/hide categories
+            categories.forEach(cat => {
+                if (category === 'all') {
+                    cat.style.display = 'block';
+                } else if (cat.dataset.category === category) {
+                    cat.style.display = 'block';
+                } else {
+                    cat.style.display = 'none';
+                }
+            });
+
+            // Smooth scroll to first visible category
+            setTimeout(() => {
+                const firstVisible = document.querySelector('.menu-category[style="display: block;"]');
+                if (firstVisible && category !== 'all') {
+                    firstVisible.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
+        }
+    </script>
+</body>
+</html>

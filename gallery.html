@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - Royal Spice Restaurant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gold: #D4AF37;
+            --dark-bg: #0a0a0a;
+            --card-bg: #1a1a1a;
+            --text-light: #f5f5f5;
+            --text-gray: #b0b0b0;
+            --accent-red: #8B0000;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.98);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(212, 175, 55, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+            text-decoration: none;
+        }
+
+        .logo i {
+            margin-right: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-gold);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-gold);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--primary-gold);
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-top: 70px;
+            padding: 4rem 2rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.2) 0%, rgba(212, 175, 55, 0.2) 100%);
+        }
+
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: var(--primary-gold);
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+        }
+
+        /* Gallery Container */
+        .gallery-container {
+            max-width: 1400px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Filter Buttons */
+        .gallery-filter {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.8rem 2rem;
+            background: var(--card-bg);
+            color: var(--text-light);
+            border: 2px solid transparent;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--primary-gold);
+            color: var(--dark-bg);
+            border-color: var(--primary-gold);
+            transform: translateY(-2px);
+        }
+
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            height: 300px;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .gallery-item:hover::before {
+            opacity: 1;
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            position: relative;
+        }
+
+        .gallery-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            z-index: 2;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover .gallery-info {
+            transform: translateY(0);
+        }
+
+        .gallery-info h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary-gold);
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .gallery-info p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .gallery-tag {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--primary-gold);
+            color: var(--dark-bg);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        /* Lightbox Modal */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .lightbox-image {
+            width: 100%;
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15rem;
+            border-radius: 10px;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: -50px;
+            right: 0;
+            background: var(--primary-gold);
+            color: var(--dark-bg);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .lightbox-close:hover {
+            transform: rotate(90deg);
+            background: #f0c850;
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary-gold);
+            color: var(--dark-bg);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .lightbox-nav:hover {
+            background: #f0c850;
+        }
+
+        .lightbox-prev {
+            left: -70px;
+        }
+
+        .lightbox-next {
+            right: -70px;
+        }
+
+        .lightbox-caption {
+            text-align: center;
+            margin-top: 1rem;
+            color: var(--text-light);
+        }
+
+        .lightbox-caption h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary-gold);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--card-bg);
+            padding: 2rem;
+            margin-top: 5rem;
+            text-align: center;
+        }
+
+        .footer p {
+            color: var(--text-gray);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: flex;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                right: -100%;
+                flex-direction: column;
+                background: rgba(10, 10, 10, 0.98);
+                width: 100%;
+                padding: 2rem;
+                gap: 1rem;
+                transition: right 0.3s;
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+
+            .gallery-item {
+                height: 250px;
+            }
+
+            .lightbox-nav {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+
+            .lightbox-prev {
+                left: 10px;
+            }
+
+            .lightbox-next {
+                right: 10px;
+            }
+
+            .lightbox-image {
+                font-size: 8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-utensils"></i>Royal Spice
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Our Gallery</h1>
+        <p>A visual journey through our culinary excellence</p>
+    </div>
+
+    <!-- Gallery Container -->
+    <div class="gallery-container">
+        <!-- Filter Buttons -->
+        <div class="gallery-filter">
+            <button class="filter-btn active" onclick="filterGallery('all')">All Photos</button>
+            <button class="filter-btn" onclick="filterGallery('food')">Food</button>
+            <button class="filter-btn" onclick="filterGallery('interior')">Interior</button>
+            <button class="filter-btn" onclick="filterGallery('events')">Events</button>
+        </div>
+
+        <!-- Gallery Grid -->
+        <div class="gallery-grid">
+            <!-- Food Items -->
+            <div class="gallery-item" data-category="food" data-index="0">
+                <div class="gallery-tag">Food</div>
+                <div class="gallery-image" style="background: linear-gradient(135deg, #8B0000 0%, #D4AF37 100%);">🍛</div>
+                <div class="gallery-info">
+                    <h3>Butter Chicken</h3>
+                    <p>Our signature creamy curry</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="food" data-index="1">
+                <div class="gallery-tag">Food</div>
+                <div class="gallery-image" style="background: linear-gradient(135deg, #D4AF37 0%, #FF8C00 100%);">🍚</div>
+                <div class="gallery-info">
+                    <h3>Hyderabadi Biryani</h3>
+                    <p>Aromatic rice delicacy</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="food" data-index="2">
+                <div class="gallery-tag">Food</div>
+                <div class="gallery-image" style="background: linear-gradient(135deg, #228B22 0%, #D4AF37 100%);">🧆</div>
+                <div class="gallery-info">
+                    <h3>Paneer Tikka</h3>
+                    <p>Grilled cottage cheese</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="food" data-index="3">
+                <div class="gallery-tag">Food</div>
+                <div class="gallery-image" style="background: linear-gradient(135deg, #8B0000 0%, #FF6347 100%);">🥙</div>
+                <div class="gallery-info">
+                    <h3>Seekh Kebab</h3>
+                    <p>Spiced meat skewers</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="food" data-index="4">
+                <div class="gallery-tag">Food</div>
+                <div class="gallery-image" style="background: linear-gradient(135deg, #D4AF37 0%, #DAA520 100%);">🍤</div>
+                <div class="gallery-info">
+                    <h3>Tandoori Prawns</h3>
+                    <p>Clay oven grilled seafood</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="food" data-index="5">
+                <div class="gallery-tag">Food</div>
+                <div class="gallery-image" style="background: linear-gradient(135deg, #FFE4B5 0%, #FFD700 100%);">🍮</div>
+                <div class="gallery-info">
+                    <h3>Gulab Jamun</h3>
+                    <p>Sweet milk dumplings</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="food" data-index="6">
+                <div class="gallery-tag">Food</div>
+                <div class="gallery-image" style="background: linear-gradient(135deg, #32CD32 0%, #228B22 100%);">🥘</div>
+                <div class="gallery-info">
+                    <h3>Dal Makhani</h3>
+                    <p>Creamy black lentils</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="food" data-index="7">
+                <div class="gallery-tag">Food</div>
+                <div class="gallery-image" style="background: linear-gradient(135deg, #FF6347 0%, #D4AF37 100%);">🍗</div>
+                <div class="gallery-info">
+                    <h3>Rogan Josh</h3>
+                    <p>Aromatic lamb curry</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="food" data-index="8">
+                <div class="gallery-tag">Food</div>
+                <div class="gallery-image" style="background: linear-gradient(135deg, #F0E68C 0%, #D4AF37 100%);">🍰</div>
+                <div class="gallery-info">
+                    <h3>Ras Malai</h3>
+                    <p>Saffron cottage cheese dessert</p>
+                </div>
+            </div>
+
+            <!-- Interior Items -->
+            <div class="gallery-item" data-category="interior" data-index="9">
+                <div class="gallery-tag">Interior</div>
+                <div class="gallery-image" style="background: linear-gradient(135deg, #4B0082 0%, #D4AF37 100%);">🪔</div>
+                <div class="gallery-info">
+                    <h3>Main Dining Area</h3>
+                    <p>Elegant ambiance</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="interior" data-index="10">
+                <div class="gallery-tag">Interior</div>
+                <div class="gallery-image" style="background: linear-gradient(135deg, #8B4513 0%, #D4AF37 100%);">🕌</div>
+                <div class="gallery-info">
+                    <h3>Private Dining Room</h3>
+                    <p>Perfect for celebrations</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="interior" data-index="11">
+                <div class="gallery-tag">Interior</div>
+                <div class="gallery-image" style="background: linear-gradient(135deg, #2F4F4F 0%, #D4AF37 100%);">🍽️</div>
+                <div class="gallery-info">
+                    <h3>Table Setting</h3>
+                    <p>Premium dining experience</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="interior" data-index="12">
+                <div class="gallery-tag">Interior</div>
+                <div class="gallery-image" style="background: linear-gradient(135deg, #800020 0%, #D4AF37 100%);">💡</div>
+                <div class="gallery-info">
+                    <h3>Lounge Area</h3>
+                    <p>Relaxed seating</p>
+                </div>
+            </div>
+
+            <!-- Events -->
+            <div class="gallery-item" data-category="events" data-index="13">
+                <div class="gallery-tag">Events</div>
+                <div class="gallery-image" style="background: linear-gradient(135deg, #FF1493 0%, #D4AF37 100%);">🎉</div>
+                <div class="gallery-info">
+                    <h3>Wedding Reception</h3>
+                    <p>Special celebrations</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="events" data-index="14">
+                <div class="gallery-tag">Events</div>
+                <div class="gallery-image" style="background: linear-gradient(135deg, #4169E1 0%, #D4AF37 100%);">🎂</div>
+                <div class="gallery-info">
+                    <h3>Birthday Party</h3>
+                    <p>Memorable moments</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="events" data-index="15">
+                <div class="gallery-tag">Events</div>
+                <div class="gallery-image" style="background: linear-gradient(135deg, #FF6347 0%, #FFD700 100%);">🎊</div>
+                <div class="gallery-info">
+                    <h3>Corporate Event</h3>
+                    <p>Business gatherings</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="food" data-index="16">
+                <div class="gallery-tag">Food</div>
+                <div class="gallery-image" style="background: linear-gradient(135deg, #FFFACD 0%, #FFD700 100%);">🥭</div>
+                <div class="gallery-info">
+                    <h3>Mango Lassi</h3>
+                    <p>Refreshing yogurt drink</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="food" data-index="17">
+                <div class="gallery-tag">Food</div>
+                <div class="gallery-image" style="background: linear-gradient(135deg, #DDA0DD 0%, #8B008B 100%);">🍨</div>
+                <div class="gallery-info">
+                    <h3>Kulfi</h3>
+                    <p>Traditional Indian ice cream</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <div class="lightbox-close" onclick="closeLightbox()">
+                <i class="fas fa-times"></i>
+            </div>
+            <div class="lightbox-nav lightbox-prev" onclick="changeImage(-1)">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="lightbox-image" id="lightboxImage"></div>
+            <div class="lightbox-nav lightbox-next" onclick="changeImage(1)">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="lightbox-caption">
+                <h3 id="lightboxTitle"></h3>
+                <p id="lightboxDesc"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Royal Spice Restaurant. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Gallery filter functionality
+        function filterGallery(category) {
+            const items = document.querySelectorAll('.gallery-item');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            
+            filterBtns.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            items.forEach(item => {
+                if (category === 'all') {
+                    item.style.display = 'block';
+                } else if (item.dataset.category === category) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Lightbox functionality
+        let currentImageIndex = 0;
+        let allImages = [];
+
+        function initGallery() {
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            
+            galleryItems.forEach((item, index) => {
+                const imageData = {
+                    background: item.querySelector('.gallery-image').style.background,
+                    emoji: item.querySelector('.gallery-image').textContent,
+                    title: item.querySelector('.gallery-info h3').textContent,
+                    desc: item.querySelector('.gallery-info p').textContent
+                };
+                allImages.push(imageData);
+                
+                item.addEventListener('click', () => {
+                    openLightbox(index);
+                });
+            });
+        }
+
+        function openLightbox(index) {
+            currentImageIndex = index;
+            displayImage();
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function changeImage(direction) {
+            currentImageIndex += direction;
+            if (currentImageIndex < 0) {
+                currentImageIndex = allImages.length - 1;
+            } else if (currentImageIndex >= allImages.length) {
+                currentImageIndex = 0;
+            }
+            displayImage();
+        }
+
+        function displayImage() {
+            const image = allImages[currentImageIndex];
+            const lightboxImage = document.getElementById('lightboxImage');
+            lightboxImage.style.background = image.background;
+            lightboxImage.textContent = image.emoji;
+            document.getElementById('lightboxTitle').textContent = image.title;
+            document.getElementById('lightboxDesc').textContent = image.desc;
+        }
+
+        // Close lightbox with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            } else if (e.key === 'ArrowLeft') {
+                changeImage(-1);
+            } else if (e.key === 'ArrowRight') {
+                changeImage(1);
+            }
+        });
+
+        // Initialize gallery on page load
+        initGallery();
+    </script>
+</body>
+</html>
